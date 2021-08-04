@@ -9,3 +9,37 @@ datasource db {
 generator client {
   provider = "prisma-client-js"
 }
+
+model User {
+  id           String         @id @default(cuid())
+  firstName    String
+  lastName     String
+  email        String         @unique
+  password     String
+  UserComments UserComments[]
+}
+
+model Vehicule {
+  id               String         @id @default(cuid())
+  Name             String
+  Miles_per_Gallon Float?
+  Displacement     Float?
+  Horsepower       Int?
+  Weight_in_lbs    Float?
+  Cylinders        Int
+  Acceleration     Float
+  comments         UserComments[]
+  Year             String
+  Origin           String
+  createdAt        DateTime       @default(now())
+}
+
+model UserComments {
+  id         String   @id @default(cuid())
+  vehiculeId String
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  vehicule   Vehicule @relation(fields: [vehiculeId], references: [id])
+  content    String
+
+}

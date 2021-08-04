@@ -17,22 +17,27 @@
     "migrate:up": "prisma migrate dev --preview-feature"
   },
   "dependencies": {
+    "@prisma/client": "2.13.1",
     "@types/bcryptjs": "^2.4.2",
     "@types/ioredis": "^4.17.9",
     "@types/jsonwebtoken": "^8.5.0",
     "@types/lodash": "^4.14.168",
     "apollo-server": "^2.19.0",
+    "bcrypt": "^5.0.1",
     "bcryptjs": "^2.4.3",
     "bson-objectid": "^1.3.1",
     "dotenv-cli": "^4.0.0",
     "file-type": "^16.2.0",
+    "graphql": "^15.5.1",
     "graphql-redis-subscriptions": "^2.3.1",
     "ioredis": "^4.19.4",
     "moment": "^2.29.1",
+    "nexus": "^1.1.0",
     "ts-node-dev": "^1.1.1",
     "typescript": "^4.3.5"
   },
   "devDependencies": {
+    "@prisma/cli": "2.13.1",
     "@types/minio": "^7.0.7",
     "@types/node": "^16.4.12",
     "dotenv": "^8.2.0",

@@ -1,2 +1,2 @@
-import * as VehiculeType from "./vehicule";
-import * as UserType from "./user";
+export * as VehiculeType from "./vehicule";
+export * as UserType from "./user";
