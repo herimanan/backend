@@ -1,0 +1,24 @@
+version: "3"
+services:
+  redis:
+    image: redis:5.0
+    ports:
+      - 6379:6379
+  pgadmin:
+    image: dpage/pgadmin4:2019-11-12-2
+    ports:
+      - "88:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: fenopro36@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: root@R001
+  postgres:
+    image: postgres:12
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: bestBack
+      POSTGRES_USER: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      MINIO_ACCESS_KEY: VQ36J06R3Q11893SOBC2
+      MINIO_SECRET_KEY: 8S1NP3iHOz96eDWgjrH65QTb6o9GnbJU5KkiRfGL
