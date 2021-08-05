@@ -14,12 +14,28 @@ declare global {
 }
 
 export interface NexusGenInputs {
+  AddCommentInput: { // input type
+    content: string; // String!
+    vehiculeId: string; // String!
+  }
   InputNameUser: { // input type
     userName?: string | null; // String
   }
   loginInput: { // input type
     email: string; // String!
     password: string; // String!
+  }
+  vehiculeSearchFilter: { // input type
+    Acceleration?: number | null; // Float
+    Cylinders?: number | null; // Float
+    Displacement?: number | null; // Float
+    Miles_per_Gallone?: string | null; // String
+    Name?: string | null; // String
+    Origin?: string | null; // String
+    Weight_in_lbs?: number | null; // Float
+    Year?: string | null; // String
+    skip?: number | null; // Int
+    take?: number | null; // Int
   }
 }
 
@@ -47,8 +63,28 @@ export interface NexusGenObjects {
     password?: string | null; // String
     userName?: string | null; // String
   }
+  UserComments: { // root type
+    content?: string | null; // String
+    id: string; // String!
+    userId?: string | null; // String
+    vehiculeId?: string | null; // String
+  }
   Vehicule: { // root type
+    Acceleration?: number | null; // Float
+    Cylinders?: number | null; // Float
+    Displacement?: number | null; // Float
+    Miles_per_Gallone?: string | null; // String
+    Name?: string | null; // String
+    Origin?: string | null; // String
+    Weight_in_lbs?: number | null; // Float
+    Year?: string | null; // String
     id?: string | null; // String
+    skip?: number | null; // Int
+    take?: number | null; // Int
+  }
+  VehiculeResult: { // root type
+    data?: Array<NexusGenRootTypes['Vehicule'] | null> | null; // [Vehicule]
+    total?: number | null; // Int
   }
 }
 
@@ -67,10 +103,11 @@ export interface NexusGenFieldTypes {
     accessToken: string | null; // String
   }
   Mutation: { // field return type
+    addComment: NexusGenRootTypes['UserComments']; // UserComments!
     login: NexusGenRootTypes['LoginPayload']; // LoginPayload!
   }
   Query: { // field return type
-    ok: boolean; // Boolean!
+    getVehicules: NexusGenRootTypes['VehiculeResult'] | null; // VehiculeResult
   }
   User: { // field return type
     email: string | null; // String
@@ -79,8 +116,30 @@ export interface NexusGenFieldTypes {
     password: string | null; // String
     userName: string | null; // String
   }
+  UserComments: { // field return type
+    content: string | null; // String
+    id: string; // String!
+    user: NexusGenRootTypes['User'] | null; // User
+    userId: string | null; // String
+    vehiculeId: string | null; // String
+  }
   Vehicule: { // field return type
+    Acceleration: number | null; // Float
+    Cylinders: number | null; // Float
+    Displacement: number | null; // Float
+    Miles_per_Gallone: string | null; // String
+    Name: string | null; // String
+    Origin: string | null; // String
+    Weight_in_lbs: number | null; // Float
+    Year: string | null; // String
+    comments: NexusGenRootTypes['UserComments'] | null; // UserComments
     id: string | null; // String
+    skip: number | null; // Int
+    take: number | null; // Int
+  }
+  VehiculeResult: { // field return type
+    data: Array<NexusGenRootTypes['Vehicule'] | null> | null; // [Vehicule]
+    total: number | null; // Int
   }
 }
 
@@ -89,10 +148,11 @@ export interface NexusGenFieldTypeNames {
     accessToken: 'String'
   }
   Mutation: { // field return type name
+    addComment: 'UserComments'
     login: 'LoginPayload'
   }
   Query: { // field return type name
-    ok: 'Boolean'
+    getVehicules: 'VehiculeResult'
   }
   User: { // field return type name
     email: 'String'
@@ -101,15 +161,45 @@ export interface NexusGenFieldTypeNames {
     password: 'String'
     userName: 'String'
   }
-  Vehicule: { // field return type name
+  UserComments: { // field return type name
+    content: 'String'
     id: 'String'
+    user: 'User'
+    userId: 'String'
+    vehiculeId: 'String'
+  }
+  Vehicule: { // field return type name
+    Acceleration: 'Float'
+    Cylinders: 'Float'
+    Displacement: 'Float'
+    Miles_per_Gallone: 'String'
+    Name: 'String'
+    Origin: 'String'
+    Weight_in_lbs: 'Float'
+    Year: 'String'
+    comments: 'UserComments'
+    id: 'String'
+    skip: 'Int'
+    take: 'Int'
+  }
+  VehiculeResult: { // field return type name
+    data: 'Vehicule'
+    total: 'Int'
   }
 }
 
 export interface NexusGenArgTypes {
   Mutation: {
+    addComment: { // args
+      addCommentIput?: NexusGenInputs['AddCommentInput'] | null; // AddCommentInput
+    }
     login: { // args
       userLoginInput?: NexusGenInputs['loginInput'] | null; // loginInput
+    }
+  }
+  Query: {
+    getVehicules: { // args
+      vehiculeSearchFilter?: NexusGenInputs['vehiculeSearchFilter'] | null; // vehiculeSearchFilter
     }
   }
 }

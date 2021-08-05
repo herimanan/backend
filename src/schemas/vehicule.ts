@@ -2,15 +2,22 @@ import { extendType, inputObjectType, objectType } from "nexus";
 import moment from "moment";
 
 import { Context } from "../Context";
+import { resolve } from "path/posix";
+import { ApolloError } from "apollo-server";
+import { Prisma } from "@prisma/client";
 moment.locale("fr");
 
 export const vehiculeSearchFilter = inputObjectType({
   name: "vehiculeSearchFilter",
   definition(t) {
-    t.nullable.string("type");
-    t.nullable.string("name");
-    t.nullable.string("range");
-    t.nullable.string("year");
+    t.nullable.string("Miles_per_Gallone");
+    t.nullable.string("Name");
+    t.nullable.float("Displacement");
+    t.nullable.float("Weight_in_lbs");
+    t.nullable.float("Cylinders");
+    t.nullable.float("Acceleration");
+    t.nullable.string("Year");
+    t.nullable.string("Origin");
     t.nullable.int("skip");
     t.nullable.int("take");
   },
@@ -19,7 +26,7 @@ export const vehiculeSearchFilter = inputObjectType({
 export const Comment = objectType({
   name: "UserComments",
   definition(t) {
-    t.string("id");
+    t.nonNull.string("id");
     t.string("userId");
     t.string("vehiculeId");
     t.string("content");
@@ -27,7 +34,7 @@ export const Comment = objectType({
       type: "User",
       async resolve(parent, arg, ctx: Context) {
         const id = parent.userId;
-        return await ctx.db.user.findUnique({ where: { id } });
+        return await ctx.db.user.findUnique({ where: { id: id || undefined } });
       },
     });
   },
@@ -37,15 +44,24 @@ export const Vehicule = objectType({
   name: "Vehicule",
   definition(t) {
     t.string("id");
-    t.string("type");
-    t.string("range");
-    t.string("name");
+    t.string("Miles_per_Gallone");
+    t.string("Name");
+    t.float("Displacement");
+    t.float("Weight_in_lbs");
+    t.float("Cylinders");
+    t.float("Acceleration");
+    t.string("Year");
+    t.string("Origin");
+    t.int("skip");
+    t.int("take");
     t.field("comments", {
       type: "UserComments",
       async resolve(parent, arg, ctx: Context) {
         if (ctx.userId && ctx.userId !== "-1") {
           const id = parent.id;
-          return await ctx.db.userComments.findMany({ where: {} });
+          return (await ctx.db.userComments.findMany({
+            where: { id: id || undefined },
+          })) as any;
         }
       },
     });
@@ -64,44 +80,64 @@ export const vehiculeResult = objectType({
 export const getVehicules = extendType({
   type: "Query",
   definition(t) {
-    t.list.field("getVehicules", {
+    t.field("getVehicules", {
       type: "VehiculeResult",
       args: { vehiculeSearchFilter },
       async resolve(_root, _args, ctx: Context) {
         const skip =
-          _args &&
-          _args.vehiculeSearchFilter &&
-          _args.vehiculeSearchFilter.skip;
+          (_args &&
+            _args.vehiculeSearchFilter &&
+            _args.vehiculeSearchFilter.skip) ||
+          null ||
+          undefined;
         const take =
+          (_args &&
+            _args.vehiculeSearchFilter &&
+            _args.vehiculeSearchFilter.take) ||
+          null ||
+          undefined;
+        const acceleration =
           _args &&
           _args.vehiculeSearchFilter &&
-          _args.vehiculeSearchFilter.take;
-        const type =
+          _args.vehiculeSearchFilter.Acceleration;
+        const cylenders =
           _args &&
           _args.vehiculeSearchFilter &&
-          _args.vehiculeSearchFilter.type;
-        const range =
+          _args.vehiculeSearchFilter.Cylinders;
+        const Miles_per_Gallone =
           _args &&
           _args.vehiculeSearchFilter &&
-          _args.vehiculeSearchFilter.range;
-        const year =
-          _args &&
-          _args.vehiculeSearchFilter &&
-          _args.vehiculeSearchFilter.year;
+          _args.vehiculeSearchFilter.Miles_per_Gallone;
         const name =
           _args &&
           _args.vehiculeSearchFilter &&
-          _args.vehiculeSearchFilter.name;
+          _args.vehiculeSearchFilter.Name;
+        const origin =
+          _args &&
+          _args.vehiculeSearchFilter &&
+          _args.vehiculeSearchFilter.Origin;
 
-        const whereQuery = {
+        const displacement =
+          _args &&
+          _args.vehiculeSearchFilter &&
+          _args.vehiculeSearchFilter.Displacement;
+        const Year =
+          _args &&
+          _args.vehiculeSearchFilter &&
+          _args.vehiculeSearchFilter.Year;
+
+        const whereQuery: any = {
           AND: {
-            type,
-            year,
-            range,
+            cylenders,
+            displacement,
+            origin,
             name,
+            Miles_per_Gallone,
+            acceleration,
+            Year,
           },
         };
-        const transactionData = ctx.db.vehicule.findMany({
+        const vehiculeData = ctx.db.vehicule.findMany({
           skip,
           take,
           where: { ...whereQuery },
@@ -112,10 +148,43 @@ export const getVehicules = extendType({
         const total: number = await ctx.db.vehicule.count({
           where: whereQuery,
         });
+        const result = { total, data: vehiculeData };
+        return result as any;
+      },
+    });
+  },
+});
 
-        const result = { total, data: transactionData };
+export const addCommentIput = inputObjectType({
+  name: "AddCommentInput",
+  definition(t) {
+    t.nonNull.string("content");
+    t.nonNull.string("vehiculeId");
+  },
+});
+export const addComment = extendType({
+  type: "Mutation",
+  definition(t) {
+    t.nonNull.field("addComment", {
+      type: "UserComments",
+      args: { addCommentIput },
+      async resolve(_root, _args, ctx: Context) {
+        try {
+          if (!ctx.userId || ctx.userId === "-1") {
+            return new ApolloError("UseId is required");
+          }
+          const content = _args.addCommentIput?.content;
+          const data: Prisma.UserCommentsCreateInput = {
+            content: content || "",
+            user: { connect: { id: ctx.userId } },
+            vehicule: { connect: { id: _args.addCommentIput?.vehiculeId } },
+          };
 
-        return result;
+          const newComment = await ctx.db.userComments.create({ data });
+          return newComment as any;
+        } catch (error) {
+          throw new Error(error);
+        }
       },
     });
   },

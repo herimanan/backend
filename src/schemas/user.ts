@@ -26,6 +26,13 @@ export const userLoginInput = inputObjectType({
   },
 });
 
+export const loginPayload = objectType({
+  name: "LoginPayload",
+  definition(t) {
+    t.string("accessToken");
+  },
+});
+
 export const userFiltered = inputObjectType({
   name: "InputNameUser",
   definition(t) {
@@ -37,7 +44,7 @@ export const login = extendType({
   type: "Mutation",
   definition(t) {
     t.nonNull.field("login", {
-      type: "String",
+      type: "LoginPayload",
       args: { userLoginInput },
       async resolve(_root, args, ctx: Context) {
         if (args.userLoginInput) {
@@ -70,7 +77,7 @@ export const login = extendType({
               user && user.id ? user.id : ""
             );
 
-            return accessToken as any;
+            return { accessToken } as any;
           } catch (error) {
             throw new Error(error);
           }

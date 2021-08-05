@@ -2,6 +2,11 @@
 ### Do not make changes to this file directly
 
 
+input AddCommentInput {
+  content: String!
+  vehiculeId: String!
+}
+
 input InputNameUser {
   userName: String
 }
@@ -11,11 +16,12 @@ type LoginPayload {
 }
 
 type Mutation {
+  addComment(addCommentIput: AddCommentInput): UserComments!
   login(userLoginInput: loginInput): LoginPayload!
 }
 
 type Query {
-  ok: Boolean!
+  getVehicules(vehiculeSearchFilter: vehiculeSearchFilter): VehiculeResult
 }
 
 type User {
@@ -26,11 +32,49 @@ type User {
   userName: String
 }
 
+type UserComments {
+  content: String
+  id: String!
+  user: User
+  userId: String
+  vehiculeId: String
+}
+
 type Vehicule {
+  Acceleration: Float
+  Cylinders: Float
+  Displacement: Float
+  Miles_per_Gallone: String
+  Name: String
+  Origin: String
+  Weight_in_lbs: Float
+  Year: String
+  comments: UserComments
   id: String
+  skip: Int
+  take: Int
+}
+
+"""For pagination"""
+type VehiculeResult {
+  data: [Vehicule]
+  total: Int
 }
 
 input loginInput {
   email: String!
   password: String!
+}
+
+input vehiculeSearchFilter {
+  Acceleration: Float
+  Cylinders: Float
+  Displacement: Float
+  Miles_per_Gallone: String
+  Name: String
+  Origin: String
+  Weight_in_lbs: Float
+  Year: String
+  skip: Int
+  take: Int
 }
