@@ -1,4 +1,11 @@
 # backend
+Stack used:
+- nodejs
+- graphql
+- nexus
+- prisma
+- postgres
+
 Some services are running inside Docker,you need to start those services before running the project
 To start
 ```sh
