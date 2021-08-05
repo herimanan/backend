@@ -16,6 +16,7 @@ Then start the project
 yarn dev
 ```
 Defaul users and vehicule data need to be seeded
-Run ```sh 
+Run:
+```sh 
 yarn seed
 ```
